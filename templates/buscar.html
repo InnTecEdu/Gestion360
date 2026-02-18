@@ -46,22 +46,24 @@
                     <td>{{ doc.nombre_original }}</td>
                     <td>{{ doc.fecha }}</td>
                     <td>
-                        <a href="{{ url_for('document.ver',
-                        identificador=doc.identificador,
-                        nombre=doc.nombre_guardado) }}" target="_blank" class="btn btn-sm btn-primary">
+                        <a href="{{ url_for('document.ver', identificador=doc.identificador, nombre=doc.nombre_guardado) }}" 
+                        target="_blank" 
+                        class="btn btn-sm btn-primary">
                             Ver
                         </a>
-                        <a href="{{ url_for('document.actualizar',
-                    id_documento=doc.id) }}" class="btn btn-sm btn-warning">
+                        <a href="{{ url_for('document.actualizar', id_documento=doc.id) }}" 
+                        class="btn btn-sm btn-warning">
                             Actualizar
                         </a>
 
-                        <a href="{{ url_for('document.eliminar',
-                        id_documento=doc.id) }}"
-                            onclick="return confirm('¿Seguro que deseas eliminar este documento?')"
-                            class="btn btn-sm btn-danger">
+                        {% if current_user.rol == 'admin' %}
+                        <a href="{{ url_for('document.eliminar',id_documento=doc.id) }}" 
+                        onclick="return confirm('¿Seguro que deseas eliminar este documento?')"
+                        class="btn btn-sm btn-danger">
                             Eliminar
                         </a>
+                        {% endif %}
+
                     </td>
 
                 </tr>
