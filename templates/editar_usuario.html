@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        Editar Usuario
+    </div>
+
+    <div class="card-body">
+        <form method="POST">
+
+            <div class="mb-3">
+                <label>Usuario</label>
+                <input type="text" name="username" 
+                       value="{{ usuario[1] }}" 
+                       class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Rol</label>
+                <select name="rol" class="form-select">
+                    <option value="usuario" {% if usuario[2]=='usuario' %}selected{% endif %}>
+                        Usuario
+                    </option>
+                    <option value="admin" {% if usuario[2]=='admin' %}selected{% endif %}>
+                        Admin
+                    </option>
+                </select>
+            </div>
+
+            <button class="btn btn-success">Guardar Cambios</button>
+            <a href="{{ url_for('user.listar_usuarios') }}" class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

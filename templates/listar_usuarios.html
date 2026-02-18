@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Usuarios{% endblock %}
+
+{% block content %}
+
+
+<div class="card shadow">
+    <div class="card-header bg-dark text-white">
+        Gestión de Usuarios
+        <a href="{{ url_for('user.crear_usuario') }}" 
+           class="btn btn-sm btn-success float-end">
+           + Crear Usuario
+        </a>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u[0] }}</td>
+                    <td>{{ u[1] }}</td>
+                    <td>{{ u[2] }}</td>
+                    <td>
+                        <a href="{{ url_for('user.editar_usuario', id=u[0]) }}" 
+                           class="btn btn-sm btn-primary">
+                           Editar
+                        </a>
+
+                        <a href="{{ url_for('user.eliminar_usuario', id=u[0]) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('¿Eliminar usuario?')">
+                           Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Actualizar Documento{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        Actualizar Documento
+    </div>
+    <div class="card-body">
+
+        <p><strong>Documento actual:</strong> {{ doc.nombre_original }}</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input type="file" name="file" class="form-control" required>
+            </div>
+            <button class="btn btn-success">Actualizar</button>
+            <a href="{{ url_for('document.buscar') }}" class="btn btn-secondary">
+                Cancelar
+            </a>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

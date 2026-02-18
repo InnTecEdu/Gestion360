@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Buscar Documentos{% endblock %}
+
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-warning">
+        Buscar por ID
+    </div>
+    <div class="card-body">
+        <form method="POST" class="row g-3">
+            <div class="col-md-8">
+                <input type="text" name="identificador" maxlength="11" class="form-control" placeholder="Ingrese ID"
+                    required>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-warning w-100">
+                    Buscar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if resultados is not none %}
+
+<div class="card shadow">
+    <div class="card-header bg-secondary text-white">
+        Resultados
+    </div>
+    <div class="card-body">
+
+        {% if resultados %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in resultados %}
+                <tr>
+                    <td>{{ doc.nombre_original }}</td>
+                    <td>{{ doc.fecha }}</td>
+                    <td>
+                        <a href="{{ url_for('document.ver',
+                        identificador=doc.identificador,
+                        nombre=doc.nombre_guardado) }}" target="_blank" class="btn btn-sm btn-primary">
+                            Ver
+                        </a>
+                        <a href="{{ url_for('document.actualizar',
+                    id_documento=doc.id) }}" class="btn btn-sm btn-warning">
+                            Actualizar
+                        </a>
+
+                        <a href="{{ url_for('document.eliminar',
+                        id_documento=doc.id) }}"
+                            onclick="return confirm('¿Seguro que deseas eliminar este documento?')"
+                            class="btn btn-sm btn-danger">
+                            Eliminar
+                        </a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">
+            No se encontraron documentos para este ID.
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

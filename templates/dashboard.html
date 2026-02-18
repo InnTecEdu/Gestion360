@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">Panel Principal</h3>
+
+<div class="row g-4">
+
+    <!-- Subir Documento -->
+    <div class="col-md-4">
+        <div class="card shadow text-center h-100">
+            <div class="card-body d-flex flex-column justify-content-center">
+                <h5>📤 Subir Documento</h5>
+                <a href="{{ url_for('document.subir') }}" 
+                   class="btn btn-success mt-3">
+                    Ir
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buscar Documento -->
+    <div class="col-md-4">
+        <div class="card shadow text-center h-100">
+            <div class="card-body d-flex flex-column justify-content-center">
+                <h5>🔎 Buscar Documentos</h5>
+                <a href="{{ url_for('document.buscar') }}" 
+                   class="btn btn-warning mt-3">
+                    Buscar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestión Usuarios SOLO ADMIN -->
+    {% if current_user.rol == 'admin' %}
+    <div class="col-md-4">
+        <div class="card shadow text-center h-100 border-dark">
+            <div class="card-body d-flex flex-column justify-content-center">
+                <h5>👥 Gestión de Usuarios</h5>
+                <a href="{{ url_for('user.listar_usuarios') }}" 
+                   class="btn btn-dark mt-3">
+                    Administrar
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Subir Documento{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+    <div class="card-header bg-success text-white">
+        Subir Documento PDF
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label class="form-label">ID Asociado (máx 11 dígitos)</label>
+                <input type="text" name="identificador" maxlength="11" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Archivo PDF</label>
+                <input type="file" name="file" accept=".pdf" class="form-control" required>
+            </div>
+
+            <button class="btn btn-success">Subir</button>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}
