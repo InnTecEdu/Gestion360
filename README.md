@@ -27,4 +27,12 @@ archivo_digital/
 ├── /uploads
 
 
-pip install flask flask-mysqldb flask-login werkzeug
+
+
+
+Pasos instalación
+
+virtualenv env
+source env/Scripts/activate
+pip install -r requirements.txt
+py app.py
