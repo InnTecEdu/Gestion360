@@ -36,6 +36,7 @@ def eliminar_documento_bd(id_documento):
     cur.close()
 
 
+
 def actualizar_documento(id_documento, nombre_original, nombre_guardado, ruta):
     cur = mysql.connection.cursor()
     cur.execute("""

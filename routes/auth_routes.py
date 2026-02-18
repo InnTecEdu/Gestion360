@@ -6,6 +6,7 @@ from extensiones import login_manager
 
 auth = Blueprint('auth', __name__)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     from models.user_model import get_user_by_id

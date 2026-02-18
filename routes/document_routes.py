@@ -13,6 +13,7 @@ from models.document_model import (
 )
 
 
+
 document = Blueprint('document', __name__)
 
 ALLOWED_EXTENSIONS = {'pdf'}

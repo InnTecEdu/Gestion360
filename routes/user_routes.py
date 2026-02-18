@@ -35,6 +35,7 @@ def crear_usuario():
     return render_template('crear_usuario.html')
 
 
+
 @user.route('/usuarios')
 @login_required
 def listar_usuarios():

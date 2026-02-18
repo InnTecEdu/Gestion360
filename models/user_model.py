@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from werkzeug.security import check_password_hash
 from extensiones import mysql
 
+
 class User(UserMixin):
     def __init__(self, id, username, rol):
         self.id = id

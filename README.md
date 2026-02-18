@@ -1,6 +1,5 @@
 pip install flask flask-mysqldb flask-login werkzeug
 
-
 archivo_digital/
 │
 ├── app.py

@@ -9,3 +9,4 @@ class Config:
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = ''
     MYSQL_DB = 'archivo_digital'
+
