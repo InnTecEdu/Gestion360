@@ -2,6 +2,9 @@ import os
 from flask import Flask
 from config import Config
 from extensiones import mysql, login_manager
+from routes.user_routes import user
+
+
 
 
 def create_app():
@@ -19,6 +22,7 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(user)
     app.register_blueprint(document)
+
 
     if not os.path.exists('uploads'):
         os.makedirs('uploads')

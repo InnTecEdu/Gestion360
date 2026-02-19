@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login con Selección de Usuario</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  body, html {
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #f5b841 35%, #2e2a55 65%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f0f0f0;
+    margin: 0;
+  }
+
+  .container {
+    position: relative;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 600px;
+    background: #2e2a55;
+    border-radius: 30px 30px 50px 10px;
+    box-shadow:
+      0 15px 35px rgba(0,0,0,0.5),
+      inset 0 -5px 20px #3a3676;
+    padding: 80px 40px 70px;
+    text-align: center;
+    
+    overflow: visible;
+  }
+
+  h2 {
+    font-weight: 700;
+    font-size: 2.2rem;
+    margin-bottom: 35px;
+  }
+
+  /* Paso 1 y 2 */
+  .step {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+
+  }
+
+  .step.active {
+    display: flex;
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    background: #3a3676;
+    color: #f0f0f0;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+    margin-bottom: 25px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  input[type="text"]:focus, input[type="password"]:focus {
+    background: #4c4a93;
+    box-shadow:
+      inset 0 3px 12px rgba(83,109,253,0.9),
+      0 0 8px #536dfdaa;
+  }
+
+  button {
+    background: #3a3676;
+    border: none;
+    color: #f0f0f0;
+    font-weight: 700;
+    padding: 18px 35px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow:
+      0 6px 15px #2b2960,
+      inset 0 -3px 8px #4c4a93;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1.2rem;
+    width: 100%;
+  }
+
+  button:hover {
+    background: #536dfd;
+    box-shadow:
+      0 10px 25px #536dfd,
+      inset 0 -3px 10px #3a43c3;
+  }
+
+  /* Perfil + esferas */
+  .profile-container {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin-bottom: 40px;
+  }
+
+  .profile-container img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 10px 15px rgba(255 255 255 / 0.1);
+    z-index: 10;
+    position: relative;
+  }
+
+  .sphere {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.85;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+
+  .sphere.red {
+    background: #f44336;
+    width: 36px;
+    height: 36px;
+    top: 22%;
+    left: -20%;
+    animation: floatAround 6s ease-in-out infinite;
+    animation-delay: 0s;
+  }
+
+  .sphere.yellow {
+    background: #f5b841;
+    width: 48px;
+    height: 48px;
+    top: 70%;
+    right: -28%;
+    animation: floatAround 7s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+
+  .sphere.blue {
+    background: #536dfd;
+    width: 26px;
+    height: 26px;
+    top: 12%;
+    right: 18%;
+    animation: floatAround 5s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  @keyframes floatAround {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+      opacity: 0.85;
+    }
+    50% {
+      transform: translateY(-14px) translateX(7px);
+      opacity: 1;
+    }
+  }
+
+
+</style>
+</head>
+<body>
+
+<div class="container" role="main" aria-label="Formulario de selección de usuario y login">
+
+  <!-- Paso 1: ¿Quién eres? -->
+  <div class="step active" id="step-1">
+    <h2>¿Quién va a entrar?</h2>
+    <input type="text" id="input-username" placeholder="Escribe tu usuario" aria-label="Ingrese su nombre de usuario" autocomplete="username" />
+    <button id="btn-next">Continuar</button>
+  </div>
+
+  <!-- Paso 2: Login con foto -->
+  <div class="step" id="step-2" aria-live="polite" aria-atomic="true">
+    <h2>Bienvenid@</h2>
+    <div class="profile-container" aria-label="Foto de usuario con esferas animadas">
+      <img id="user-photo" src="https://randomuser.me/api/portraits/men/75.jpg" alt="Foto de usuario" />
+      <div class="sphere red" aria-hidden="true"></div>
+      <div class="sphere yellow" aria-hidden="true"></div>
+      <div class="sphere blue" aria-hidden="true"></div>
+    </div>
+
+    <form aria-label="Formulario de inicio de sesión">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="••••••••" required autocomplete="current-password" />
+      <button type="submit" aria-label="Iniciar sesión">LOGIN</button>
+    </form>
+
+   
+  </div>
+
+</div>
+
+<script>
+  // Simula que backend te devuelve la foto según username
+  const fakeUserPhotos = {
+    chester: 'https://randomuser.me/api/portraits/men/75.jpg',
+    maria: 'https://randomuser.me/api/portraits/women/65.jpg',
+    juan: 'https://randomuser.me/api/portraits/men/15.jpg'
+  };
+
+  const step1 = document.getElementById('step-1');
+  const step2 = document.getElementById('step-2');
+  const btnNext = document.getElementById('btn-next');
+  const inputUsername = document.getElementById('input-username');
+  const userPhoto = document.getElementById('user-photo');
+
+  btnNext.addEventListener('click', () => {
+    let username = inputUsername.value.trim().toLowerCase();
+
+    if (!username) {
+      alert('Por favor, ingresa tu usuario');
+      return;
+    }
+
+    // Asigna foto o usa una default si no está en la lista
+    userPhoto.src = fakeUserPhotos[username] || 'https://randomuser.me/api/portraits/lego/1.jpg';
+    userPhoto.alt = `Foto de usuario ${username}`;
+
+    // Oculta paso 1, muestra paso 2
+    step1.classList.remove('active');
+    step2.classList.add('active');
+  });
+
+</script>
+
+</body>
+</html>

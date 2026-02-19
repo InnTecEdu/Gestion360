@@ -1,28 +1,179 @@
-{% extends "base.html" %}
-{% block title %}Login{% endblock %}
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <div class="card shadow">
-            <div class="card-header text-center bg-primary text-white">
-                Iniciar Sesión
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Usuario</label>
-                        <input type="text" name="username" class="form-control" required>
-                    </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
-                    <div class="mb-3">
-                        <label class="form-label">Contraseña</label>
-                        <input type="password" name="password" class="form-control" required>
-                    </div>
+  body, html {
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #f5b841 35%, #2e2a55 65%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f0f0f0;
+    margin: 0;
+  }
 
-                    <button class="btn btn-primary w-100">Ingresar</button>
-                </form>
-            </div>
-        </div>
+  .container {
+    position: relative;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width: 400px;
+    height: 600px;
+    background: #2e2a55;
+    border-radius: 30px 30px 50px 10px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 -5px 20px #3a3676;
+    padding: 80px 40px 70px;
+    text-align: center;
+    overflow: visible;
+  }
+
+  h2 {
+    font-weight: 700;
+    font-size: 2.2rem;
+    margin-bottom: 35px;
+  }
+
+  .step {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+  .step.active {
+    display: flex;
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 18px 20px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    background: #3a3676;
+    color: #f0f0f0;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+    margin-bottom: 25px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  input[type="text"]:focus, input[type="password"]:focus {
+    background: #4c4a93;
+    box-shadow: inset 0 3px 12px rgba(83,109,253,0.9), 0 0 8px #536dfdaa;
+  }
+
+  button {
+    background: #3a3676;
+    border: none;
+    color: #f0f0f0;
+    font-weight: 700;
+    padding: 18px 35px;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 6px 15px #2b2960, inset 0 -3px 8px #4c4a93;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    font-size: 1.2rem;
+    width: 100%;
+  }
+
+  button:hover {
+    background: #536dfd;
+    box-shadow: 0 10px 25px #536dfd, inset 0 -3px 10px #3a43c3;
+  }
+
+  .profile-container {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin-bottom: 40px;
+  }
+
+  .profile-container img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 10px 15px rgba(255 255 255 / 0.1);
+    z-index: 10;
+    position: relative;
+  }
+
+  .sphere {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.85;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+
+  .sphere.red { background: #f44336; width: 36px; height: 36px; top: 22%; left: -20%; animation: floatAround 6s ease-in-out infinite; animation-delay: 0s; }
+  .sphere.yellow { background: #f5b841; width: 48px; height: 48px; top: 70%; right: -28%; animation: floatAround 7s ease-in-out infinite; animation-delay: 2s; }
+  .sphere.blue { background: #536dfd; width: 26px; height: 26px; top: 12%; right: 18%; animation: floatAround 5s ease-in-out infinite; animation-delay: 1s; }
+
+  @keyframes floatAround {
+    0%, 100% { transform: translateY(0) translateX(0); opacity: 0.85; }
+    50% { transform: translateY(-14px) translateX(7px); opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="container" role="main">
+
+  <!-- Paso 1: Usuario -->
+  <div class="step active" id="step-1">
+    <h2>¿Quién va a entrar?</h2>
+    <input type="text" id="input-username" name="username" placeholder="Escribe tu usuario" autocomplete="username" />
+    <button type="button" id="btn-next">Continuar</button>
+  </div>
+
+  <!-- Paso 2: Login -->
+  <div class="step" id="step-2">
+    <h2>Bienvenid@</h2>
+    <div class="profile-container">
+      <img id="user-photo" src="https://randomuser.me/api/portraits/lego/1.jpg" alt="Foto de usuario" />
+      <div class="sphere red"></div>
+      <div class="sphere yellow"></div>
+      <div class="sphere blue"></div>
     </div>
+
+    <form method="POST">
+      <input type="hidden" id="hidden-username" name="username" />
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="••••••••" required autocomplete="current-password" />
+      <button type="submit">LOGIN</button>
+    </form>
+  </div>
+
 </div>
-{% endblock %}
+
+<script>
+  const step1 = document.getElementById('step-1');
+  const step2 = document.getElementById('step-2');
+  const btnNext = document.getElementById('btn-next');
+  const inputUsername = document.getElementById('input-username');
+  const hiddenUsername = document.getElementById('hidden-username');
+  const userPhoto = document.getElementById('user-photo');
+
+  btnNext.addEventListener('click', async () => {
+    const username = inputUsername.value.trim();
+    if (!username) return alert('Ingresa tu usuario');
+
+    // Pedir foto del usuario al backend
+    const res = await fetch(`/get_user_photo/${username}`);
+    const data = await res.json();
+
+    userPhoto.src = data.foto || '/static/images/default-user.jpg';
+    userPhoto.alt = `Foto de ${username}`;
+    hiddenUsername.value = username;
+
+    // Mostrar paso 2
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+  });
+</script>
+</body>
+</html>

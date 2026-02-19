@@ -2,13 +2,12 @@
 {% block title %}Crear Usuario{% endblock %}
 {% block content %}
 
-
 <div class="card shadow">
     <div class="card-header bg-primary text-white">
         Crear Nuevo Usuario
     </div>
     <div class="card-body">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data"> <!-- importante: enctype -->
 
             <div class="mb-3">
                 <label class="form-label">Usuario</label>
@@ -28,10 +27,38 @@
                 </select>
             </div>
 
-            <button class="btn btn-success">Crear Usuario</button>
+            <div class="mb-3">
+                <label class="form-label">Foto de perfil (opcional)</label>
+                <input type="file" name="foto" accept="image/*" class="form-control">
+            </div>
+
+            <div class="mb-3 text-center">
+                <img id="preview-photo" src="/static/images/default.png" 
+                     alt="Vista previa" style="width:120px; height:120px; border-radius:50%; object-fit:cover;">
+            </div>
+
+            <button class="btn btn-success w-100">Crear Usuario</button>
 
         </form>
     </div>
 </div>
+
+<script>
+    const fotoInput = document.querySelector('input[name="foto"]');
+    const preview = document.getElementById('preview-photo');
+
+    fotoInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = "/static/images/default.png";
+        }
+    });
+</script>
 
 {% endblock %}
