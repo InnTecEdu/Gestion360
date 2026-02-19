@@ -3,7 +3,7 @@ from flask_login import login_required, current_user, login_user
 from werkzeug.security import generate_password_hash
 from extensiones import mysql
 from models.user_model import get_user_by_username, User
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 
 user = Blueprint('user', __name__)
 

@@ -1,10 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Usuarios{% endblock %}
+
 {% block content %}
+<style>
+    /* Card morada */
+.card-morada {
+    background-color: #3b2f63;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
 
+/* Header */
+.header-morado {
+    background-color: #2a204a !important;
+    color: white;
+    font-weight: bold;
+}
 
-<div class="card shadow">
-    <div class="card-header bg-dark text-white">
+/* Tabla morada */
+.tabla-morada {
+    color: white;
+}
+
+.tabla-morada th {
+    background-color: #2f2457 !important;
+    color: white;
+}
+
+.tabla-morada td {
+    background-color: #4b3b8f !important;
+    color: white;
+}
+
+/* Hover elegante */
+.tabla-morada tbody tr:hover td {
+    background-color: #5c4fa3 !important;
+    transition: 0.2s;
+}
+
+</style>
+<div class="card card-morada shadow">
+    <div class="card-header header-morado">
         Gestión de Usuarios
         <a href="{{ url_for('user.crear_usuario') }}" 
            class="btn btn-sm btn-success float-end">
@@ -13,7 +50,7 @@
     </div>
 
     <div class="card-body">
-        <table class="table table-bordered table-striped">
+        <table class="table tabla-morada">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -46,5 +83,6 @@
         </table>
     </div>
 </div>
+
 
 {% endblock %}
