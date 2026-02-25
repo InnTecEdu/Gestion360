@@ -6,12 +6,11 @@ from werkzeug.utils import secure_filename
 from config import Config
 from models.document_model import (
     insertar_documento,
-    buscar_por_identificador,
+    buscar_documentos,
     obtener_documento_por_id,
     eliminar_documento_bd,
     actualizar_documento
 )
-
 
 
 document = Blueprint('document', __name__)
@@ -97,12 +96,13 @@ def buscar():
     resultados = []
 
     if request.method == 'POST':
-        identificador = request.form['identificador']
+        termino = request.form.get('identificador', '').strip()
 
-        if validar_identificador(identificador):
-            resultados = buscar_por_identificador(identificador)
-        else:
-            flash("ID inválido")
+        if not termino:
+            flash("Debe ingresar un valor para buscar")
+            return render_template('buscar.html', resultados=[])
+
+        resultados = buscar_documentos(termino)
 
     return render_template('buscar.html', resultados=resultados)
 

@@ -13,13 +13,19 @@ def insertar_documento(identificador, nombre_original, nombre_guardado, ruta, us
     cur.close()
 
 
-def buscar_por_identificador(identificador):
+def buscar_documentos(termino):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT * FROM documentos WHERE identificador = %s", (identificador,))
+
+    # 🔎 Buscar por identificador exacto o nombre parcial
+    cur.execute("""
+        SELECT * FROM documentos 
+        WHERE identificador = %s
+        OR nombre_completo LIKE %s
+    """, (termino, f"%{termino}%"))
+
     data = cur.fetchall()
     cur.close()
     return data
-
 
 def obtener_documento_por_id(id_documento):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
