@@ -1,56 +1,79 @@
-from extensiones import mysql
-import MySQLdb.cursors
+from __future__ import annotations
+
+from typing import Any
+
+from sqlalchemy import or_, select
+
+from extensiones import db
+from models.entities import Documento
 
 
-def insertar_documento(identificador, nombre_original, nombre_guardado, ruta, usuario_id):
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        INSERT INTO documentos 
-        (identificador, nombre_original, nombre_guardado, ruta, usuario_id)
-        VALUES (%s,%s,%s,%s,%s)
-    """, (identificador, nombre_original, nombre_guardado, ruta, usuario_id))
-    mysql.connection.commit()
-    cur.close()
+def _document_to_dict(document: Documento) -> dict[str, Any]:
+    return {
+        "id": document.id,
+        "identificador": document.identificador,
+        "nombre_original": document.nombre_original,
+        "nombre_guardado": document.nombre_guardado,
+        "ruta": document.ruta,
+        "usuario_id": document.usuario_id,
+        "fecha_creacion": document.fecha_creacion,
+    }
 
 
-def buscar_documentos(termino):
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-    # 🔎 Buscar por identificador exacto o nombre parcial
-    cur.execute("""
-        SELECT * FROM documentos 
-        WHERE identificador = %s
-        OR nombre_completo LIKE %s
-    """, (termino, f"%{termino}%"))
-
-    data = cur.fetchall()
-    cur.close()
-    return data
-
-def obtener_documento_por_id(id_documento):
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT * FROM documentos WHERE id = %s", (id_documento,))
-    data = cur.fetchone()
-    cur.close()
-    return data
+def insert_document(
+    identificador: str,
+    nombre_original: str,
+    nombre_guardado: str,
+    ruta: str,
+    usuario_id: int,
+) -> None:
+    document = Documento(
+        identificador=identificador,
+        nombre_original=nombre_original,
+        nombre_guardado=nombre_guardado,
+        ruta=ruta,
+        usuario_id=usuario_id,
+    )
+    db.session.add(document)
+    db.session.commit()
 
 
-def eliminar_documento_bd(id_documento):
-    cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM documentos WHERE id = %s", (id_documento,))
-    mysql.connection.commit()
-    cur.close()
+def search_documents(termino: str) -> list[dict[str, Any]]:
+    like_term = f"%{termino.strip()}%"
+    query = (
+        select(Documento)
+        .where(
+            or_(
+                Documento.identificador == termino.strip(),
+                Documento.nombre_original.ilike(like_term),
+            )
+        )
+        .order_by(Documento.fecha_creacion.desc())
+    )
+    rows = db.session.execute(query).scalars().all()
+    return [_document_to_dict(row) for row in rows]
 
 
+def get_document_by_id(document_id: int) -> dict[str, Any] | None:
+    document = db.session.get(Documento, document_id)
+    return _document_to_dict(document) if document else None
 
-def actualizar_documento(id_documento, nombre_original, nombre_guardado, ruta):
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        UPDATE documentos
-        SET nombre_original=%s,
-            nombre_guardado=%s,
-            ruta=%s
-        WHERE id=%s
-    """, (nombre_original, nombre_guardado, ruta, id_documento))
-    mysql.connection.commit()
-    cur.close()
+
+def delete_document(document_id: int) -> None:
+    document = db.session.get(Documento, document_id)
+    if not document:
+        return
+
+    db.session.delete(document)
+    db.session.commit()
+
+
+def update_document(document_id: int, nombre_original: str, nombre_guardado: str, ruta: str) -> None:
+    document = db.session.get(Documento, document_id)
+    if not document:
+        raise ValueError(f"Documento no existe: {document_id}")
+
+    document.nombre_original = nombre_original
+    document.nombre_guardado = nombre_guardado
+    document.ruta = ruta
+    db.session.commit()
