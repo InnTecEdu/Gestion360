@@ -1,185 +1,171 @@
 import os
-import uuid
-from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
+from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from config import Config
+
 from models.document_model import (
-    insertar_documento,
-    buscar_documentos,
-    obtener_documento_por_id,
-    eliminar_documento_bd,
-    actualizar_documento
+    delete_document,
+    get_document_by_id,
+    insert_document,
+    search_documents,
+    update_document,
 )
+from services.storage_service import delete_file, get_file_stream, upload_document_file
 
 
-document = Blueprint('document', __name__)
+document = Blueprint("document", __name__)
 
-ALLOWED_EXTENSIONS = {'pdf'}
-
-
-# ✅ Validar extensión
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+ALLOWED_EXTENSIONS = {"pdf"}
 
 
-# ✅ Validar identificador
-def validar_identificador(identificador):
+def allowed_file(filename: str) -> bool:
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def validar_identificador(identificador: str) -> bool:
     return identificador.isdigit() and len(identificador) <= 11
 
 
-# 🔹 SUBIR DOCUMENTO
-@document.route('/subir', methods=['GET', 'POST'])
+@document.route("/subir", methods=["GET", "POST"])
 @login_required
 def subir():
-    if request.method == 'POST':
+    """
+    Handle the document upload page.
+    On GET, render the upload form. On POST, validate and process the uploaded file.
+    """
+    if request.method == "GET":
+        return render_template("subir.html")
 
-        identificador = request.form['identificador']
+    identificador = request.form.get("identificador", "").strip()
+    if not validar_identificador(identificador):
+        flash("ID inválido")
+        return redirect(url_for("document.subir"))
 
-        # Validar ID
-        if not validar_identificador(identificador):
-            flash("ID inválido")
-            return redirect(request.url)
+    file = request.files.get("file")
+    if not file or not file.filename:
+        flash("Debe seleccionar un archivo")
+        return redirect(url_for("document.subir"))
 
-        # Validar archivo
-        if 'file' not in request.files:
-            flash("No se seleccionó archivo")
-            return redirect(request.url)
+    if not allowed_file(file.filename):
+        flash("Formato no permitido (solo PDF)")
+        return redirect(url_for("document.subir"))
 
-        file = request.files['file']
+    try:
+        nombre_original = secure_filename(file.filename)
+        storage_key = upload_document_file(file, identificador, nombre_original)
+        nombre_guardado = os.path.basename(storage_key)
 
-        if file.filename == '':
-            flash("No se seleccionó archivo")
-            return redirect(request.url)
+        insert_document(
+            identificador=identificador,
+            nombre_original=nombre_original,
+            nombre_guardado=nombre_guardado,
+            ruta=storage_key,
+            usuario_id=int(current_user.id),
+        )
 
-        if file and allowed_file(file.filename):
-
-            nombre_original = secure_filename(file.filename)
-            nuevo_nombre = str(uuid.uuid4()) + ".pdf"
-
-            # 📂 Crear carpeta por identificador
-            carpeta_id = os.path.join(Config.UPLOAD_FOLDER, identificador)
-
-            if not os.path.exists(carpeta_id):
-                os.makedirs(carpeta_id)
-
-            # Ruta final
-            ruta = os.path.join(carpeta_id, nuevo_nombre)
-
-            # Guardar archivo
-            file.save(ruta)
-
-            # Guardar en base de datos
-            insertar_documento(
-                identificador,
-                nombre_original,
-                nuevo_nombre,
-                ruta,
-                current_user.id
-            )
-
-            flash("Documento subido correctamente")
-            return redirect(url_for('document.subir'))
-
-        else:
-            flash("Formato no permitido (solo PDF)")
-            return redirect(request.url)
-
-    return render_template('subir.html')
+        flash("Documento subido correctamente")
+        return redirect(url_for("document.subir"))
+    except Exception as err:
+        flash("No fue posible subir el documento")
+        raise RuntimeError("Error al subir documento") from err
 
 
-# 🔹 BUSCAR DOCUMENTOS
-@document.route('/buscar', methods=['GET', 'POST'])
+@document.route("/buscar", methods=["GET", "POST"])
 @login_required
 def buscar():
-
+    """
+    Handle the document search page.
+    On GET, render the search form. On POST, validate and process the search query.
+    """
     resultados = []
 
-    if request.method == 'POST':
-        termino = request.form.get('identificador', '').strip()
-
+    if request.method == "POST":
+        termino = request.form.get("identificador", "").strip()
         if not termino:
             flash("Debe ingresar un valor para buscar")
-            return render_template('buscar.html', resultados=[])
+            return render_template("buscar.html", resultados=[])
+        resultados = search_documents(termino)
 
-        resultados = buscar_documentos(termino)
-
-    return render_template('buscar.html', resultados=resultados)
+    return render_template("buscar.html", resultados=resultados)
 
 
-# 🔹 VER DOCUMENTO
-@document.route('/ver/<identificador>/<nombre>')
+@document.route("/ver/<int:document_id>")
 @login_required
-def ver(identificador, nombre):
-
-    ruta = os.path.join(Config.UPLOAD_FOLDER, identificador, nombre)
-
-    if os.path.exists(ruta):
-        return send_file(ruta)
-    else:
-        flash("Archivo no encontrado")
-        return redirect(url_for('document.buscar'))
-    
-@document.route('/eliminar/<int:id_documento>')
-@login_required
-def eliminar(id_documento):
-
-    doc = obtener_documento_por_id(id_documento)
-
-    if doc:
-        ruta = doc['ruta']
-
-        # Eliminar archivo físico
-        if os.path.exists(ruta):
-            os.remove(ruta)
-
-        # Eliminar registro BD
-        eliminar_documento_bd(id_documento)
-
-        flash("Documento eliminado correctamente")
-
-    else:
-        flash("Documento no encontrado")
-
-    return redirect(url_for('document.buscar'))
-
-@document.route('/actualizar/<int:id_documento>', methods=['GET', 'POST'])
-@login_required
-def actualizar(id_documento):
-
-    doc = obtener_documento_por_id(id_documento)
-
+def ver(document_id: int):
+    """
+    Handle the document viewing endpoint. Retrieves the document by ID and serves the file if found.
+    """
+    doc = get_document_by_id(document_id)
     if not doc:
         flash("Documento no encontrado")
-        return redirect(url_for('document.buscar'))
+        return redirect(url_for("document.buscar"))
 
-    if request.method == 'POST':
+    stream = get_file_stream(doc["ruta"])
+    if not stream:
+        flash("Archivo no encontrado")
+        return redirect(url_for("document.buscar"))
 
-        file = request.files['file']
+    return send_file(stream, mimetype="application/pdf")
 
-        if file and allowed_file(file.filename):
 
-            # Eliminar archivo viejo
-            if os.path.exists(doc['ruta']):
-                os.remove(doc['ruta'])
+@document.route("/eliminar/<int:id_documento>")
+@login_required
+def eliminar(id_documento):
+    """
+    Handle the document deletion endpoint. Validates permissions and deletes the document if authorized.
+    """
+    doc = get_document_by_id(id_documento)
+    if not doc:
+        flash("Documento no encontrado")
+        return redirect(url_for("document.buscar"))
 
-            nombre_original = secure_filename(file.filename)
-            nuevo_nombre = str(uuid.uuid4()) + ".pdf"
+    if current_user.rol != "admin" and str(doc["usuario_id"]) != str(current_user.id):
+        flash("No autorizado para eliminar este documento")
+        return redirect(url_for("document.buscar"))
 
-            carpeta_id = os.path.join(Config.UPLOAD_FOLDER, doc['identificador'])
+    try:
+        delete_file(doc["ruta"])
+        delete_document(id_documento)
+        flash("Documento eliminado correctamente")
+        return redirect(url_for("document.buscar"))
+    except Exception as err:
+        flash("No fue posible eliminar el documento")
+        raise RuntimeError("Error al eliminar documento") from err
 
-            ruta = os.path.join(carpeta_id, nuevo_nombre)
 
-            file.save(ruta)
+@document.route("/actualizar/<int:id_documento>", methods=["GET", "POST"])
+@login_required
+def actualizar(id_documento):
+    """
+    Handle the document update page.
+    On GET, render the update form. On POST, validate and process the updated file.
+    """
+    doc = get_document_by_id(id_documento)
+    if not doc:
+        flash("Documento no encontrado")
+        return redirect(url_for("document.buscar"))
 
-            actualizar_documento(
-                id_documento,
-                nombre_original,
-                nuevo_nombre,
-                ruta
-            )
+    if current_user.rol != "admin" and str(doc["usuario_id"]) != str(current_user.id):
+        flash("No autorizado para actualizar este documento")
+        return redirect(url_for("document.buscar"))
 
-            flash("Documento actualizado correctamente")
-            return redirect(url_for('document.buscar'))
+    if request.method == "GET":
+        return render_template("actualizar.html", doc=doc)
 
-    return render_template('actualizar.html', doc=doc)
+    file = request.files.get("file")
+    if not file or not file.filename or not allowed_file(file.filename):
+        flash("Debe seleccionar un PDF válido")
+        return redirect(url_for("document.actualizar", id_documento=id_documento))
+
+    try:
+        delete_file(doc["ruta"])
+        nombre_original = secure_filename(file.filename)
+        storage_key = upload_document_file(file, doc["identificador"], nombre_original)
+        nombre_guardado = os.path.basename(storage_key)
+
+        update_document(id_documento, nombre_original, nombre_guardado, storage_key)
+        flash("Documento actualizado correctamente")
+        return redirect(url_for("document.buscar"))
+    except Exception as err:
+        flash("No fue posible actualizar el documento")
+        raise RuntimeError("Error al actualizar documento") from err
