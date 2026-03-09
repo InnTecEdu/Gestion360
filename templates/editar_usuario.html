@@ -13,17 +13,17 @@
             <div class="mb-3">
                 <label>Usuario</label>
                 <input type="text" name="username" 
-                       value="{{ usuario[1] }}" 
+                      value="{{ usuario.username }}" 
                        class="form-control" required>
             </div>
 
             <div class="mb-3">
                 <label>Rol</label>
                 <select name="rol" class="form-select">
-                    <option value="usuario" {% if usuario[2]=='usuario' %}selected{% endif %}>
+                    <option value="usuario" {% if usuario.rol=='usuario' %}selected{% endif %}>
                         Usuario
                     </option>
-                    <option value="admin" {% if usuario[2]=='admin' %}selected{% endif %}>
+                    <option value="admin" {% if usuario.rol=='admin' %}selected{% endif %}>
                         Admin
                     </option>
                 </select>
