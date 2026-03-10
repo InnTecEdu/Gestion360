@@ -75,4 +75,12 @@ Para producción:
 - Rotar credenciales si se compartieron por error.
 - Mantener permisos mínimos por entorno.
 
+## Manejo de datos operativos
+
+Los documentos PDF y las imágenes de usuario **nunca** deben confirmarse en el repositorio (commit/push).
+
+- **Producción / staging:** configurar las variables de Azure en `.env` para usar Azure Blob Storage. Los archivos se almacenan con la clave `educar/Gestion360/…` dentro del contenedor configurado.
+- **Desarrollo local:** si no se configuran las variables de Azure, los archivos se guardan en `uploads/` (carpeta excluida por `.gitignore`). Esta carpeta NO debe añadirse al repositorio.
+- **Imagen de usuario por defecto:** apunta a una clave en Azure mediante `DEFAULT_USER_IMAGE_KEY` en `.env`. Para desarrollo local, sube una imagen de marcador de posición manualmente o usa la URL pública de un recurso genérico.
+- **Datos de prueba:** usar únicamente datos sintéticos o ficticios. No subir PDFs reales ni fotos de personas al repositorio.
 

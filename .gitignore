@@ -39,9 +39,12 @@ instance/
 .DS_Store
 Thumbs.db
 
-# Datos de ejecución locales
+# Datos de ejecución locales (archivos subidos por usuarios)
 uploads/*
 !uploads/.gitkeep
+
+# Imágenes de usuarios (se almacenan en Azure Blob Storage o en uploads/)
+static/images/users/
 
 # Tooling local del agente
 .agents/
