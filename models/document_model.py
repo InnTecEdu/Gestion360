@@ -4,7 +4,7 @@ from typing import Any
 
 from sqlalchemy import or_, select
 
-from extensiones import db
+from infrastructure import db
 from models.entities import Documento
 
 
@@ -27,13 +27,12 @@ def insert_document(
     ruta: str,
     usuario_id: int,
 ) -> None:
-    document = Documento(
-        identificador=identificador,
-        nombre_original=nombre_original,
-        nombre_guardado=nombre_guardado,
-        ruta=ruta,
-        usuario_id=usuario_id,
-    )
+    document = Documento()
+    document.identificador = identificador
+    document.nombre_original = nombre_original
+    document.nombre_guardado = nombre_guardado
+    document.ruta = ruta
+    document.usuario_id = usuario_id
     db.session.add(document)
     db.session.commit()
 

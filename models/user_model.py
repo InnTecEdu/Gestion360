@@ -4,7 +4,7 @@ from typing import Any
 
 from sqlalchemy import select
 
-from extensiones import db
+from infrastructure import db
 from models.entities import Usuario
 
 
@@ -38,12 +38,11 @@ def list_users() -> list[dict[str, Any]]:
 
 
 def insert_user(username: str, password_hash: str, rol: str, foto_key: str) -> None:
-    user = Usuario(
-        username=username,
-        password=password_hash,
-        rol=rol,
-        foto=foto_key,
-    )
+    user = Usuario()
+    user.username = username
+    user.password = password_hash
+    user.rol = rol
+    user.foto = foto_key
     db.session.add(user)
     db.session.commit()
 

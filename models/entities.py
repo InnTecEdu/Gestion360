@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from extensiones import db
+from infrastructure import db
 
 
 class Usuario(db.Model):

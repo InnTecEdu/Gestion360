@@ -13,7 +13,7 @@ from flask import (
 from flask_login import login_user, logout_user
 from werkzeug.security import check_password_hash
 
-from extensiones import login_manager
+from infrastructure import login_manager
 from models.user_model import get_user_by_id, get_user_by_username
 from services.auth_service import build_login_user
 from services.storage_service import get_file_stream
