@@ -111,10 +111,10 @@ tr:hover td {
                         {% for doc in resultados %}
                         <tr style="border-bottom: 1px solid rgba(163, 10, 10, 0.05);"style="background-color: #554788;">
                             <td>{{ doc.nombre_original }}</td>
-                            <td>{{ doc.fecha }}</td>
+                            <td>{{ doc.fecha_creacion }}</td>
                             <td>
 
-                                <a href="{{ url_for('document.ver', identificador=doc.identificador, nombre=doc.nombre_guardado) }}"
+                                <a href="{{ url_for('document.ver', document_id=doc.id) }}"
                                    target="_blank"
                                    class="btn btn-sm btn-primary me-1">
                                     Ver

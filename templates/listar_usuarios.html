@@ -62,16 +62,16 @@
             <tbody>
                 {% for u in usuarios %}
                 <tr>
-                    <td>{{ u[0] }}</td>
-                    <td>{{ u[1] }}</td>
-                    <td>{{ u[2] }}</td>
+                          <td>{{ u.id }}</td>
+                          <td>{{ u.username }}</td>
+                          <td>{{ u.rol }}</td>
                     <td>
-                        <a href="{{ url_for('user.editar_usuario', id=u[0]) }}" 
+                                <a href="{{ url_for('user.editar_usuario', user_id=u.id) }}" 
                            class="btn btn-sm btn-primary">
                            Editar
                         </a>
 
-                        <a href="{{ url_for('user.eliminar_usuario', id=u[0]) }}" 
+                                <a href="{{ url_for('user.eliminar_usuario', user_id=u.id) }}" 
                            class="btn btn-sm btn-danger"
                            onclick="return confirm('¿Eliminar usuario?')">
                            Eliminar

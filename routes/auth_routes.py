@@ -1,83 +1,118 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from __future__ import annotations
+
+from flask import (
+    Blueprint,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+    flash,
+)
 from flask_login import login_user, logout_user
 from werkzeug.security import check_password_hash
-from models.user_model import User, get_user_by_username
-from extensiones import login_manager
 
-auth = Blueprint('auth', __name__)
+from infrastructure import login_manager
+from models.user_model import get_user_by_id, get_user_by_username
+from services.auth_service import build_login_user
+from services.storage_service import get_file_stream
 
-
+auth = Blueprint("auth", __name__)
 
 
 @login_manager.user_loader
-def load_user(user_id):
-    from models.user_model import get_user_by_id
-    user = get_user_by_id(user_id)
-    if user:
-        return User(user[0], user[1], user[3])
-    return None
-
-from models.user_model import get_user_by_username, User
-from flask_login import login_user
+def load_user(user_id: str):
+    user_data = get_user_by_id(user_id)
+    if not user_data:
+        return None
+    return build_login_user(user_data)
 
 
-@auth.route('/', methods=['GET', 'POST'])
+@auth.route("/", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    """
+    Manaje the login page and authentication process.
+    On GET, render the login form. On POST, validate credentials and log in the user.
+    """
+    if request.method == "GET":
+        return render_template("login.html")
 
-        # Obtener datos del usuario
-        user_data = get_user_by_username(username)  # Dict con keys: id, username, password, rol, foto
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
 
-        if user_data and check_password_hash(user_data['password'], password):
-            # Crear el objeto User para flask-login
-            user_obj = User(
-                id=user_data['id'],
-                username=user_data['username'],
-                rol=user_data['rol']
-            )
-            login_user(user_obj)
+    if not username or not password:
+        flash("Debe completar usuario y contraseña")
+        return redirect(url_for("auth.login"))
 
-            # Aquí obtenemos la URL de la foto para usar en la plantilla
-            foto_url = url_for('static', filename=f'images/{user_data["foto"]}')
+    try:
+        user_data = get_user_by_username(username)
+        valid_credentials = bool(
+            user_data and check_password_hash(user_data["password"], password)
+        )
 
-            # Puedes pasarla como parámetro si quieres mostrarla en el dashboard
-            return redirect(url_for('user.dashboard'))  # o pasar foto_url en render_template si no rediriges
-
-        else:
+        if not valid_credentials:
             flash("Usuario o contraseña incorrectos")
-            return redirect(url_for('auth.login'))
+            return redirect(url_for("auth.login"))
 
-    return render_template('login.html')
+        if user_data is None:
+            flash("Usuario o contraseña incorrectos")
+            return redirect(url_for("auth.login"))
 
-
-# @auth.route('/', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'POST':
-#         username = request.form['username']
-#         password = request.form['password']
-
-#         user_data = get_user_by_username(username)  # Esto devuelve un dict gracias a DictCursor
-
-#         if user_data and check_password_hash(user_data['password'], password):
-#             # Crear el objeto User con los datos que espera
-#             user_obj = User(
-#                 id=user_data['id'],
-#                 username=user_data['username'],
-#                 rol=user_data['rol']
-#             )
-#             login_user(user_obj)
-#             return redirect(url_for('user.dashboard'))
-
-#         else:
-#             flash("Usuario o contraseña incorrectos")
-#             return redirect(url_for('auth.login'))
-
-#     return render_template('login.html')
+        login_user(build_login_user(user_data))
+        return redirect(url_for("user.dashboard"))
+    except Exception as err:
+        flash("No fue posible iniciar sesión")
+        raise RuntimeError("Error al autenticar usuario") from err
 
 
-@auth.route('/logout')
+@auth.route("/get_user_photo/<username>")
+def get_user_photo(username: str):
+    """
+    Endpoint to retrieve the URL of a user's profile photo. If the user has no photo, returns the URL of a default image.
+    """
+    user_data = get_user_by_username(username)
+    if not user_data:
+        return jsonify({"foto": url_for("static", filename="images/default-user.jpg")})
+
+    photo_key = (user_data.get("foto") or "").strip()
+    if not photo_key:
+        return jsonify({"foto": url_for("static", filename="images/default-user.jpg")})
+
+    if photo_key.startswith("static/"):
+        return jsonify(
+            {"foto": url_for("static", filename=photo_key.replace("static/", "", 1))}
+        )
+
+    return jsonify({"foto": url_for("auth.user_photo", user_id=user_data["id"])})
+
+
+@auth.route("/user_photo/<int:user_id>")
+def user_photo(user_id: int):
+    """
+    Endpoint to serve the user's profile photo. If the user has no photo or if there's an error retrieving it, serves a default image.
+    """
+    user_data = get_user_by_id(user_id)
+    if not user_data:
+        return redirect(url_for("static", filename="images/default-user.jpg"))
+
+    photo_key = (user_data.get("foto") or "").strip()
+    if not photo_key:
+        return redirect(url_for("static", filename="images/default-user.jpg"))
+
+    if photo_key.startswith("static/"):
+        return redirect(url_for("static", filename=photo_key.replace("static/", "", 1)))
+
+    stream = get_file_stream(photo_key)
+    if not stream:
+        return redirect(url_for("static", filename="images/default-user.jpg"))
+
+    return send_file(stream, mimetype="image/jpeg")
+
+
+@auth.route("/logout")
 def logout():
+    """Log out the current user and redirect to the login page.
+    """
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for("auth.login"))
