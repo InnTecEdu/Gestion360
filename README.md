@@ -1,71 +1,78 @@
-pip install flask flask-mysqldb flask-login werkzeug
+# Gestión360
 
-archivo_digital/
-│
-├── app.py
-├── config.py
-├── requirements.txt
-│
-├── /models
-│     ├── __init__.py
-│     ├── user_model.py
-│     └── document_model.py
-│
-├── /routes
-│     ├── __init__.py
-│     ├── auth_routes.py
-│     ├── user_routes.py
-│     └── document_routes.py
-│
-├── /templates
-│     ├── login.html
-│     ├── dashboard.html
-│     ├── crear_usuario.html
-│     ├── subir.html
-│     ├── buscar.html
-│
-├── /uploads
+Aplicación interna para gestión de usuarios y documentos.
 
+## Uso interno
 
+Este repositorio es de uso corporativo. No publicar credenciales, rutas internas ni datos operativos en documentación pública.
 
+## Requisitos
 
+- Python 3.10 o superior
+- Acceso a base de datos MySQL corporativa
+- Dependencias del archivo requirements.txt
 
-Pasos instalación
+## Instalación
 
-virtualenv env
-source env/Scripts/activate
+1. Crear y activar entorno virtual:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+2. Instalar dependencias:
+
+```bash
 pip install -r requirements.txt
-py app.py
+```
 
-Crear BD
-archivo_digital
+3. Crear archivo de entorno:
 
+```bash
+cp .env.example .env
+```
 
-CREATE TABLE documentos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    identificador VARCHAR(100) NOT NULL,
-    nombre_original VARCHAR(255) NOT NULL,
-    nombre_guardado VARCHAR(255) NOT NULL,
-    ruta VARCHAR(500) NOT NULL,
-    usuario_id INT NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    INDEX (identificador),
-    INDEX (usuario_id),
-    
-    CONSTRAINT fk_documentos_usuario
-        FOREIGN KEY (usuario_id)
-        REFERENCES usuarios(id)
-        ON DELETE CASCADE
-);
+4. Configurar variables en `.env` (MySQL y Azure).
 
 
-CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    rol VARCHAR(50) NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+## Ejecutar proyecto
+
+```bash
+python app.py
+```
+
+La app inicia en `http://127.0.0.1:5000/`.
+
+## Variables de entorno
+
+Configurar al menos:
+
+- SECRET_KEY
+- MYSQL_HOST
+- MYSQL_USER
+- MYSQL_PASSWORD
+- MYSQL_DB
+
+Opcionales para almacenamiento en Azure:
+
+- AZURE_STORAGE_CONNECTION_STRING
+- AZURE_STORAGE_CONTAINER
+- AZURE_STORAGE_ACCOUNT_URL
+
+## Base de datos
+
+La aplicación utiliza ORM y puede crear tablas faltantes solo cuando DB_AUTO_CREATE=true.
+
+Para producción:
+
+- Definir DB_AUTO_CREATE=false
+- Gestionar cambios de esquema mediante migraciones controladas
+
+## Seguridad
+
+- No exponer secretos en repositorio.
+- Rotar credenciales si se compartieron por error.
+- Mantener permisos mínimos por entorno.
 
 
