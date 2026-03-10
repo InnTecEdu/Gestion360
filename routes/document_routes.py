@@ -100,6 +100,10 @@ def ver(document_id: int):
         flash("Documento no encontrado")
         return redirect(url_for("document.buscar"))
 
+    if current_user.rol != "admin" and str(doc["usuario_id"]) != str(current_user.id):
+        flash("No autorizado para ver este documento")
+        return redirect(url_for("document.buscar"))
+
     stream = get_file_stream(doc["ruta"])
     if not stream:
         flash("Archivo no encontrado")
