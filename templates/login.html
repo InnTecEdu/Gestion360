@@ -10,7 +10,7 @@
   body, html {
     height: 100%;
     font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #f5b841 35%, #2e2a55 65%);
+    background: linear-gradient(135deg, #00aab1 60%, #e0e7ef 100%); color: #222;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,9 +25,9 @@
     justify-content: center;
     width: 400px;
     height: 600px;
-    background: #2e2a55;
-    border-radius: 30px 30px 50px 10px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 -5px 20px #3a3676;
+    background: #00aab160; color: #222; border: 1px solid #e0e7ef;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(60,60,100,0.10);
     padding: 80px 40px 70px;
     text-align: center;
     overflow: visible;
@@ -55,35 +55,35 @@
     border-radius: 30px;
     border: none;
     outline: none;
-    background: #3a3676;
-    color: #f0f0f0;
+    background: #f8fafc;
+    color: #222;
     box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
     margin-bottom: 25px;
     transition: background 0.3s ease, box-shadow 0.3s ease;
   }
 
   input[type="text"]:focus, input[type="password"]:focus {
-    background: #4c4a93;
-    box-shadow: inset 0 3px 12px rgba(83,109,253,0.9), 0 0 8px #536dfdaa;
+    background: #fffde7; color: #222; border: 1px solid #ffd54f;
+    box-shadow: inset 0 3px 12px #00aab1, 0 0 8px #00aab160;
   }
 
   button {
-    background: #3a3676;
+    background: #00aab1;
     border: none;
     color: #f0f0f0;
     font-weight: 700;
     padding: 18px 35px;
     border-radius: 30px;
     cursor: pointer;
-    box-shadow: 0 6px 15px #2b2960, inset 0 -3px 8px #4c4a93;
+    box-shadow: 0 6px 15px #00aab160, inset 0 -3px 8px #00aab1;
     transition: background 0.3s ease, box-shadow 0.3s ease;
     font-size: 1.2rem;
     width: 100%;
   }
 
   button:hover {
-    background: #536dfd;
-    box-shadow: 0 10px 25px #536dfd, inset 0 -3px 10px #3a43c3;
+    background: #00aab160;
+    box-shadow: 0 10px 25px #00aab160, inset 0 -3px 10px #fff;
   }
 
   .profile-container {
@@ -111,7 +111,7 @@
   }
 
   .sphere.red { background: #f44336; width: 36px; height: 36px; top: 22%; left: -20%; animation: floatAround 6s ease-in-out infinite; animation-delay: 0s; }
-  .sphere.yellow { background: #f5b841; width: 48px; height: 48px; top: 70%; right: -28%; animation: floatAround 7s ease-in-out infinite; animation-delay: 2s; }
+  .sphere.yellow { background: #ffe082; width: 48px; height: 48px; top: 70%; right: -28%; animation: floatAround 7s ease-in-out infinite; animation-delay: 2s; }
   .sphere.blue { background: #536dfd; width: 26px; height: 26px; top: 12%; right: 18%; animation: floatAround 5s ease-in-out infinite; animation-delay: 1s; }
 
   @keyframes floatAround {

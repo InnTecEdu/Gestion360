@@ -2,8 +2,8 @@
 {% block title %}Editar Usuario{% endblock %}
 {% block content %}
 
-<div class="card shadow">
-    <div class="card-header bg-primary text-white">
+<div class="card shadow" style="background:#fff; border-radius:16px; border:1px solid #00aab1;">
+    <div class="card-header" style="background:#00aab1; color:#fff; font-weight:bold;">
         Editar Usuario
     </div>
 
@@ -14,12 +14,12 @@
                 <label>Usuario</label>
                 <input type="text" name="username" 
                       value="{{ usuario.username }}" 
-                       class="form-control" required>
+                       class="form-control" style="background:#f8fafc; color:#222; border:1px solid #e0e7ef;" required>
             </div>
 
             <div class="mb-3">
                 <label>Rol</label>
-                <select name="rol" class="form-select">
+                <select name="rol" class="form-select" style="background:#f8fafc; color:#222; border:1px solid #e0e7ef;">
                     <option value="usuario" {% if usuario.rol=='usuario' %}selected{% endif %}>
                         Usuario
                     </option>

@@ -9,42 +9,31 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    background: none;
 }
 
 .dashboard-title {
     text-align: center;
-    color: white;
+    color: #222;
     font-weight: 600;
     margin-bottom: 50px;
 }
 
 .custom-card {
-    background: linear-gradient(
-        145deg,
-        rgb(182, 69, 122),
-        rgba(46, 42, 94, 0.95)
-    );
-
-    border-radius: 28px;
+    background: #fff;
+    border-radius: 20px;
     padding: 45px 35px;
     text-align: center;
-    color: white;
+    color: #222;
     position: relative;
-
-    box-shadow:
-        0 20px 50px rgba(255, 255, 255, 0.5),
-        inset 0 1px 1px rgba(255,255,255,0.1);
-
-    border: 1px solid rgba(255, 255, 255, 0.08);
-
+    box-shadow: 0 8px 32px rgba(60,60,100,0.10);
+    border: 1px solid #e0e7ef;
     transition: all 0.35s ease;
 }
 
 .custom-card:hover {
-    transform: translateY(-10px);
-    box-shadow:
-        0 30px 60px rgb(42, 23, 83),
-        0 0 25px rgb(128, 57, 89);
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 16px 40px rgba(60,60,100,0.18);
 }
 .custom-card::before {
     content: "";
@@ -52,7 +41,7 @@
     inset: 0;
     border-radius: 28px;
     padding: 1px;
-    background: linear-gradient(135deg, #ffb347, #6a5acd);
+    background: #00aab1;
     -webkit-mask:
         linear-gradient(#000 0 0) content-box,
         linear-gradient(#000 0 0);
@@ -72,18 +61,21 @@
 }
 
 .btn-primary-custom {
-    background: linear-gradient(90deg,#5a54b3,#4c4693);
-    color: white;
+    background: linear-gradient(90deg,#00aab1,#00aab160);
+    color: #222;
+    border: none;
 }
 
 .btn-accent {
-    background: linear-gradient(90deg,#ffb347,#ff9800);
-    color: #2e2a5e;
+    background: #00aab1; color: #00aab160;
+    color: #222;
+    border: none;
 }
 
 .btn-dark-custom {
-    background: #2e2a5e;
-    color: white;
+    background: #00aab1; color: #00aab160;
+    color: #222;
+    border: none;
 }
 
 .custom-btn:hover {

@@ -11,12 +11,9 @@
     margin: 0;
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(
-        90deg,
-        #f4b04f 0%,
-        #3b3568 50%,
-        #2e2a5e 100%
-    );
+    background: linear-gradient(90deg, #fff 0%, #00aab1 100%);
+    color: #222;
+    /* Fondo claro y texto oscuro */
 }
 
     </style>
@@ -26,9 +23,10 @@
     <div class="container-fluid">
 
         <!-- Logo / Nombre -->
-        <a class="navbar-brand" href="{{ url_for('user.dashboard') }}">
-            📁 Gestión360
-        </a>
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('user.dashboard') }}">
+    <img src="{{ url_for('static', filename='images/logoEducar.png') }}" alt="Logo" style="height:36px; margin-right:10px;">
+    Gestión360
+</a>
 
         {% if current_user.is_authenticated %}
 
